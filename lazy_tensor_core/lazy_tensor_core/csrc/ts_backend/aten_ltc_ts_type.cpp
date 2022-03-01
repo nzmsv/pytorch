@@ -77,6 +77,7 @@ at::Tensor subtensor(const at::Tensor& tensor, int dim, int groups, int g) {
 at::Tensor CreateLtcTensor(const at::Tensor& tensor,
                            const c10::optional<torch::lazy::BackendDevice>& device) {
   if (tensor.defined() && device) {
+
     return torch::lazy::CreateAtenFromLtcTensor(torch::lazy::LazyTensor::Create(tensor, *device));
   }
   return tensor;
@@ -376,8 +377,8 @@ at::Tensor LazyNativeFunctions::_to_copy(const at::Tensor & self,
                                                     torch::lazy::atenDeviceToBackendDevice(*device));
       // std::cout << "...to_copy 1 - to lazy - created lazy_self" << std::endl;
       return torch::lazy::CreateAtenFromLtcTensor(lazy_self);
-    } else if(device->type() != c10::kLazy) {
-      // std::cout << "to_copy 2 - to device -" << std::endl;
+    } else if(device && device->type() != c10::kLazy) {
+      // std::cout << "to_copy 2 - to device " << *device << ", dtype " << *dtype << std::endl;
       TORCH_INTERNAL_ASSERT(lazy_self);
       auto eager_tensor = lazy_self.ToTensor(/*detached=*/true);
       options = options.device(device);
@@ -417,6 +418,7 @@ at::Tensor LazyNativeFunctions::empty(
                                   .pinned_memory(pin_memory)
                                   .dtype(dtype);
   auto x_result = at::empty(size, options, memory_format);
+  // std::cout << "empty: " << x_result.device() << std::endl;
   return CreateLtcTensor(x_result, GetLtcDevice(device));
 }
 
