@@ -3,6 +3,16 @@
 #include <c10/util/Exception.h>
 
 #include <atomic>
+#include <cstdio>
+#include <ctime>
+#include <unistd.h>
+
+#define tprintf(format, ...) { \
+  struct timespec ts; \
+  clock_gettime(CLOCK_REALTIME, &ts); \
+  fprintf(stderr, "%010ld.%04ld " format, (long)ts.tv_sec, (long)ts.tv_nsec, __VA_ARGS__); \
+  fflush(stderr); \
+}
 
 namespace {
 // After fork, the child process inherits the data-structures of the parent
@@ -11,8 +21,14 @@ namespace {
 // Ref: https://github.com/pytorch/pytorch/issues/54752#issuecomment-810315302
 bool leak_corrupted_threadpool = false;
 
-void child_atfork() {
+static void parent_atfork() {
+  leak_corrupted_threadpool = false;
+  tprintf("ATFORK PARENT PID %d PARENT %d\n", getpid(), getppid());
+}
+
+static void child_atfork() {
   leak_corrupted_threadpool = true;
+  tprintf("ATFORK CHILD PID %d PARENT %d\n", getpid(), getppid());
 }
 
 } // namespace
@@ -86,7 +102,7 @@ PThreadPool* pthreadpool() {
 #ifndef WIN32
   static std::once_flag flag;
   std::call_once(flag, []() {
-    pthread_atfork(nullptr, nullptr, child_atfork);
+    pthread_atfork(nullptr, parent_atfork, child_atfork);
   });
 #endif
   if (C10_UNLIKELY(leak_corrupted_threadpool)) {
