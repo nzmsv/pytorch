@@ -19,6 +19,12 @@ using namespace at;
 namespace torch {
 namespace utils {
 
+const char* parse_privateuseone_backend() {
+  std::string backend_name = "torch." + get_privateuse1_backend();
+  const char* new_backend_name = backend_name.c_str();
+  return new_backend_name;
+}
+
 static const char* backend_to_string(const at::Backend& backend) {
   switch (backend) {
     case at::Backend::CPU:
@@ -42,7 +48,7 @@ static const char* backend_to_string(const at::Backend& backend) {
     case at::Backend::MPS:
       return "torch.mps";
     case at::Backend::PrivateUse1:
-      return "torch.privateuseone";
+      return parse_privateuseone_backend();
     case at::Backend::Lazy:
       return "torch.lazy";
     case at::Backend::XLA:
