@@ -201,7 +201,7 @@ def main() -> None:
     if options.gen_lazy_ts_backend:
         aten_path = os.path.dirname(os.path.dirname(options.native_functions_path))
         ts_backend_yaml = os.path.join(aten_path, "native/ts_native_functions.yaml")
-        ts_native_functions = "torch/csrc/lazy/ts_backend/ts_native_functions.cpp"
+        ts_native_functions = os.path.join(aten_path, "../../../torch/csrc/lazy/ts_backend/ts_native_functions.cpp")
         ts_node_base = "torch/csrc/lazy/ts_backend/ts_node.h"
         install_dir = options.install_dir or os.fspath(options.gen_dir / "torch/csrc")
         lazy_install_dir = os.path.join(install_dir, "lazy/generated")
@@ -226,6 +226,7 @@ def main() -> None:
             node_base="TsNode",
             node_base_hdr=ts_node_base,
             build_in_tree=True,
+            shape_inference_hdr=os.path.join(aten_path, "../../../torch/csrc/lazy/core/shape_inference.h"),
             lazy_ir_generator=GenTSLazyIR,
             per_operator_headers=options.per_operator_headers,
             gen_forced_fallback_code=True,

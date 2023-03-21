@@ -63,13 +63,17 @@ def generate_aten_impl(ctx):
 
     install_dir = paths.dirname(ops_dir.path)
     tool_inputs, tool_inputs_manifest = ctx.resolve_tools(tools = [ctx.attr.generator])
+    src_dir = "aten/src/ATen"
+    for f in ctx.files.srcs:
+        if f.path.endswith("native/native_functions.yaml"):
+            src_dir = f.path[:-len("native/native_functions.yaml")]
     ctx.actions.run_shell(
         outputs = outputs,
         inputs = ctx.files.srcs,
         command = ctx.executable.generator.path + " $@",
         arguments = [
             "--source-path",
-            "aten/src/ATen",
+            src_dir,
             "--per-operator-headers",
             "--install_dir",
             install_dir,
