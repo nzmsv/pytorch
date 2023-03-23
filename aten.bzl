@@ -47,6 +47,7 @@ def intern_build_aten_ops(copts, deps, extra_impls):
                 "-DCPU_CAPABILITY=" + cpu_capability,
                 "-DCPU_CAPABILITY_" + cpu_capability,
             ] + CAPABILITY_COMPILER_FLAGS[cpu_capability],
+            includes = ["aten/.."],
             deps = deps,
             linkstatic = 1,
         )

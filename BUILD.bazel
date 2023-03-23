@@ -365,6 +365,9 @@ cc_library(
         [],
     ),
     visibility = ["//visibility:public"],
+    includes = [
+        "aten/..",
+    ],
     deps = [
         ":ATen_CPU",
         ":aten_headers",
@@ -384,6 +387,7 @@ cc_library(
     copts = ATEN_COPTS,
     linkstatic = True,
     visibility = ["//visibility:public"],
+    includes = ["aten/.."],
     deps = [
         ":aten_headers",
         "//c10",
