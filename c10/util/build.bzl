@@ -34,7 +34,7 @@ def define_targets(rules):
         visibility = ["//visibility:public"],
         deps = [
             ":bit_cast",
-            "//c10/macros",
+            "@pytorch//c10/macros",
             "@fmt",
         ] + rules.select({
             "//c10:using_gflags": ["@com_github_gflags_gflags//:gflags"],
@@ -43,6 +43,9 @@ def define_targets(rules):
             "//c10:using_glog": ["@com_github_glog//:glog"],
             "//conditions:default": [],
         }),
+        includes = [
+            "c10/util/../..",
+        ],
         # This library uses flags and registration. Do not let the
         # linker remove them.
         alwayslink = True,
@@ -73,6 +76,9 @@ def define_targets(rules):
             ":base",
             "//c10/core:ScalarType",
             "//c10/macros",
+        ],
+        includes = [
+            "c10/util/../..",
         ],
     )
 

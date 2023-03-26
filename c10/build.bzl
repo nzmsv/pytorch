@@ -21,4 +21,7 @@ def define_targets(rules):
             ],
             [],
         ),
+        includes = [
+            "c10/..",
+        ],
     )
