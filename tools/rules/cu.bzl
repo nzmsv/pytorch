@@ -1,6 +1,7 @@
 load("@rules_cuda//cuda:defs.bzl", "cuda_library")
 
 NVCC_COPTS = [
+    "--forward-unknown-to-host-compiler",
     "--expt-relaxed-constexpr",
     "--expt-extended-lambda",
     "--compiler-options=-Werror=all",
@@ -38,5 +39,6 @@ NVCC_COPTS = [
     "-Wno-missing-field-initializers",
 ]
 
-def cu_library(name, srcs, copts = [], **kwargs):
-    cuda_library(name, srcs = srcs, copts = NVCC_COPTS + copts, **kwargs)
+def cu_library(*args, **kwargs):
+    kwargs["copts"] = NVCC_COPTS + kwargs.get("copts", [])
+    return cuda_library(*args, **kwargs)

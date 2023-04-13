@@ -12,7 +12,7 @@ config_setting(
 selects.config_setting_group(
     name = "cuda_enabled_and_capable",
     match_all = [
-        ":cuda",
+        "@rules_cuda//cuda:is_enabled",
     ],
 )
 
