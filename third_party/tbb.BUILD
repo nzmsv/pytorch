@@ -5,7 +5,7 @@ licenses(["notice"])  # Apache 2.0
 
 template_rule(
     name = "version_string",
-    src = "@//:aten/src/ATen/cpu/tbb/extra/version_string.ver.in",
+    src = "@pytorch//:aten/src/ATen/cpu/tbb/extra/version_string.ver.in",
     out = "version_string.h",
     substitutions = {
         "@CMAKE_SYSTEM_NAME@": "Unknown",
@@ -42,8 +42,6 @@ cc_library(
         exclude = ["include/tbb/scalable_allocator.h"],
     ),
     copts = [
-        "-Iexternal/tbb/src/rml/include",
-        "-Iexternal/tbb/src",
         "-pthread",
         "-DDO_ITT_NOTIFY=1",
         "-DUSE_PTHREAD=1",
@@ -64,6 +62,8 @@ cc_library(
     includes = [
         "include",
         "src/tbb/tools_api",
+        "src/rml/include",
+        "src",
     ],
     linkopts = [
         "-ldl",
