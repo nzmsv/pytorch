@@ -12,6 +12,15 @@ def _genrule(**kwds):
 def _is_cpu_static_dispatch_build():
     return False
 
+EXTRA_CPP_OPTS = [
+    "-I external/pytorch",
+    "-isystem bazel-out/k8-fastbuild/bin/external/pytorch",
+]
+
+def _cc_library(*args, **kwargs):
+    kwargs["copts"] = EXTRA_CPP_OPTS + kwargs.get("copts", [])
+    return native.cc_library(*args, **kwargs)
+
 def _requires_cuda_enabled():
     """Returns constraint_setting that is not satisfied unless :is_cuda_enabled.
     Add to 'target_compatible_with' attribute to mark a target incompatible when
@@ -27,7 +36,7 @@ def _requires_cuda_enabled():
 # the rules simply forward to the Bazel definitions.
 rules = struct(
     cc_binary = cc_binary,
-    cc_library = cc_library,
+    cc_library = _cc_library,
     cc_test = cc_test,
     cmake_configure_file = cmake_configure_file,
     cuda_library = cuda_library,
