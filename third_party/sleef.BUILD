@@ -36,8 +36,8 @@ SLEEF_PUBLIC_HEADERS = [
 ]
 
 SLEEF_PRIVATE_INCLUDES = [
-    "-Iexternal/sleef/src/arch",
-    "-Iexternal/sleef/src/common",
+    "src/arch",
+    "src/common",
 ]
 
 SLEEF_PUBLIC_INCLUDES = [
@@ -206,7 +206,7 @@ cc_library(
         "src/libm/sleefsp.c",
     ],
     hdrs = SLEEF_PUBLIC_HEADERS,
-    copts = SLEEF_PRIVATE_INCLUDES + SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
+    copts = SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
         "-DDORENAME=1",
         "-DENABLEFLOAT128=1",
         "-Wno-unused-result",
@@ -270,10 +270,11 @@ cc_library(
 
 cc_library(
     name = "common",
-    srcs = SLEEF_PRIVATE_HEADERS + [
+    hdrs = SLEEF_PRIVATE_HEADERS,
+    srcs = [
         "src/common/common.c",
     ],
-    copts = SLEEF_PRIVATE_INCLUDES + SLEEF_COPTS + [
+    copts = SLEEF_COPTS + [
         "-Wno-unused-result",
     ],
     linkstatic = True,
@@ -286,12 +287,12 @@ cc_library(
     srcs = SLEEF_PRIVATE_HEADERS + SLEEF_PUBLIC_HEADERS + [
         ":dispavx_c",
     ],
-    copts = SLEEF_PRIVATE_INCLUDES + SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
+    copts = SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
         "-DENABLE_AVX2=1",
         "-DENABLE_FMA4=1",
         "-mavx",
     ],
-    includes = SLEEF_PUBLIC_INCLUDES,
+    includes = SLEEF_PRIVATE_INCLUDES + SLEEF_PUBLIC_INCLUDES,
     linkstatic = True,
     visibility = SLEEF_VISIBILITY,
     alwayslink = True,
@@ -302,12 +303,12 @@ cc_library(
     srcs = SLEEF_PRIVATE_HEADERS + SLEEF_PUBLIC_HEADERS + [
         ":dispsse_c",
     ],
-    copts = SLEEF_PRIVATE_INCLUDES + SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
+    copts = SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
         "-DENABLE_AVX2=1",
         "-DENABLE_FMA4=1",
         "-msse2",
     ],
-    includes = SLEEF_PUBLIC_INCLUDES,
+    includes = SLEEF_PRIVATE_INCLUDES + SLEEF_PUBLIC_INCLUDES,
     linkstatic = True,
     visibility = SLEEF_VISIBILITY,
     alwayslink = True,
@@ -321,12 +322,13 @@ sleef_cc_library(
         ":alias_avx512f_h",
         ":renameavx512f_h",
     ],
-    copts = SLEEF_PRIVATE_INCLUDES + SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
+    copts = SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
         "-DDORENAME=1",
         "-DALIAS_NO_EXT_SUFFIX=\\\"alias_avx512f.h\\\"",
         "-DENABLE_AVX512F=1",
         "-mavx512f",
     ],
+    includes = SLEEF_PRIVATE_INCLUDES,
     linkstatic = True,
     visibility = SLEEF_VISIBILITY,
     alwayslink = True,
@@ -339,11 +341,12 @@ sleef_cc_library(
         "src/libm/sleefsimdsp.c",
         ":renameavx512fnofma_h",
     ],
-    copts = SLEEF_PRIVATE_INCLUDES + SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
+    copts = SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
         "-DDORENAME=1",
         "-DENABLE_AVX512FNOFMA=1",
         "-mavx512f",
     ],
+    includes = SLEEF_PRIVATE_INCLUDES,
     linkstatic = True,
     visibility = SLEEF_VISIBILITY,
     alwayslink = True,
@@ -356,11 +359,12 @@ sleef_cc_library(
         "src/libm/sleefsimdsp.c",
         ":renameavx_h",
     ],
-    copts = SLEEF_PRIVATE_INCLUDES + SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
+    copts = SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
         "-DDORENAME=1",
         "-DENABLE_AVX=1",
         "-mavx",
     ],
+    includes = SLEEF_PRIVATE_INCLUDES,
     linkstatic = True,
     visibility = SLEEF_VISIBILITY,
     alwayslink = True,
@@ -373,12 +377,13 @@ sleef_cc_library(
         "src/libm/sleefsimdsp.c",
         ":renameavx2_h",
     ],
-    copts = SLEEF_PRIVATE_INCLUDES + SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
+    copts = SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
         "-DDORENAME=1",
         "-DENABLE_AVX2=1",
         "-mavx2",
         "-mfma",
     ],
+    includes = SLEEF_PRIVATE_INCLUDES,
     linkstatic = True,
     visibility = SLEEF_VISIBILITY,
     alwayslink = True,
@@ -391,12 +396,13 @@ sleef_cc_library(
         "src/libm/sleefsimdsp.c",
         ":renameavx2128_h",
     ],
-    copts = SLEEF_PRIVATE_INCLUDES + SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
+    copts = SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
         "-DDORENAME=1",
         "-DENABLE_AVX2128=1",
         "-mavx2",
         "-mfma",
     ],
+    includes = SLEEF_PRIVATE_INCLUDES,
     linkstatic = True,
     visibility = SLEEF_VISIBILITY,
     alwayslink = True,
@@ -409,11 +415,12 @@ sleef_cc_library(
         "src/libm/sleefsimdsp.c",
         ":renamefma4_h",
     ],
-    copts = SLEEF_PRIVATE_INCLUDES + SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
+    copts = SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
         "-DDORENAME=1",
         "-DENABLE_FMA4=1",
         "-mfma4",
     ],
+    includes = SLEEF_PRIVATE_INCLUDES,
     linkstatic = True,
     visibility = SLEEF_VISIBILITY,
     alwayslink = True,
@@ -426,11 +433,12 @@ sleef_cc_library(
         "src/libm/sleefsimdsp.c",
         ":renamesse2_h",
     ],
-    copts = SLEEF_PRIVATE_INCLUDES + SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
+    copts = SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
         "-DDORENAME=1",
         "-DENABLE_SSE2=1",
         "-msse2",
     ],
+    includes = SLEEF_PRIVATE_INCLUDES,
     linkstatic = True,
     visibility = SLEEF_VISIBILITY,
     alwayslink = True,
@@ -443,11 +451,12 @@ sleef_cc_library(
         "src/libm/sleefsimdsp.c",
         ":renamesse4_h",
     ],
-    copts = SLEEF_PRIVATE_INCLUDES + SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
+    copts = SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
         "-DDORENAME=1",
         "-DENABLE_SSE4=1",
         "-msse4.1",
     ],
+    includes = SLEEF_PRIVATE_INCLUDES,
     linkstatic = True,
     visibility = SLEEF_VISIBILITY,
     alwayslink = True,
@@ -460,10 +469,11 @@ sleef_cc_library(
         "src/libm/sleefsimdsp.c",
         ":renamepurec_scalar_h",
     ],
-    copts = SLEEF_PRIVATE_INCLUDES + SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
+    copts = SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
         "-DDORENAME=1",
         "-DENABLE_PUREC_SCALAR=1",
     ],
+    includes = SLEEF_PRIVATE_INCLUDES,
     linkstatic = True,
     visibility = SLEEF_VISIBILITY,
     alwayslink = True,
@@ -476,12 +486,13 @@ sleef_cc_library(
         "src/libm/sleefsimdsp.c",
         ":renamepurecfma_scalar_h",
     ],
-    copts = SLEEF_PRIVATE_INCLUDES + SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
+    copts = SLEEF_COPTS + SLEEF_COMMON_TARGET_COPTS + [
         "-DDORENAME=1",
         "-DENABLE_PURECFMA_SCALAR=1",
         "-mavx2",
         "-mfma",
     ],
+    includes = SLEEF_PRIVATE_INCLUDES,
     linkstatic = True,
     visibility = SLEEF_VISIBILITY,
     alwayslink = True,
