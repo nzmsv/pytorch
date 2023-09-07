@@ -1495,9 +1495,8 @@ def forward(self, x_1):
         from torch._dynamo.utils import counters
 
         counters.clear()
-        cnt = torch._dynamo.testing.CompileCounter()
 
-        @torch.compile(backend=cnt)
+        @torch.compile(backend="inductor")
         def f(x):
             return torch.ops._torch_testing.numpy_nonzero(x.clone()).clone()
 
