@@ -3014,7 +3014,7 @@ def main(runner, original_dir=None):
     if args.multiprocess_models_only:
         args.multiprocess = True
 
-    args.use_distributed = args.multiprocess and args.only
+    args.use_distributed = args.only and args.multiprocess
     if args.multiprocess:
         # NB: Do NOT query device count before CUDA initialization; we're
         # going to overwrite CUDA_VISIBLE_DEVICES and this will result in
