@@ -1181,13 +1181,13 @@ aot_inductor_launcher = """
     #include <c10/cuda/CUDAStream.h>
     #include <torch/csrc/inductor/aot_runtime/interface.h>
 
-    class AOTInductorModelContainer {
+    class AOTInductorModelHolder {
     public:
-        AOTInductorModelContainer() {
+        AOTInductorModelHolder() {
             AOT_INDUCTOR_ERROR_CHECK(AOTInductorModelContainerCreate(&container_handle, 1 /*num_models*/));
         }
 
-        ~AOTInductorModelContainer() {
+        ~AOTInductorModelHolder() {
             AOT_INDUCTOR_ERROR_CHECK(AOTInductorModelContainerDelete(container_handle));
         }
 
@@ -1200,7 +1200,7 @@ aot_inductor_launcher = """
     };
 
     // Global instance
-    AOTInductorModelContainer aot_inductor_container;
+    AOTInductorModelHolder aot_inductor_model_holder;
 
     void run(
         std::vector<at::Tensor>& input_tensors,
@@ -1220,7 +1220,7 @@ aot_inductor_launcher = """
 
         AOT_INDUCTOR_ERROR_CHECK(
             AOTInductorModelContainerRun(
-                aot_inductor_container.get(),
+                aot_inductor_model_holder.get(),
                 inputs_handle,
                 input_tensors.size(),
                 outputs_handle,
