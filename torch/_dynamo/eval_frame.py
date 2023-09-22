@@ -186,11 +186,8 @@ class OptimizedModule(torch.nn.Module):
 
     def _initialize(self):
         # Do this stuff in constructor to lower overhead slightly
-        if (
-            isinstance(self._orig_mod.forward, types.MethodType)
-            and skipfiles.check_verbose(
-                inspect.getsourcefile(self._orig_mod.forward)
-            ).skipped
+        if isinstance(self._orig_mod.forward, types.MethodType) and skipfiles.check(
+            inspect.getsourcefile(self._orig_mod.forward)
         ):
             # This may be a torch.nn.* instance in skipfiles.py which
             # won't trigger a frame evaluation workaround to add an extra
@@ -370,7 +367,7 @@ class _TorchDynamoContext:
         except TypeError:
             filename = None
         if (
-            (filename is None or skipfiles.check_verbose(filename).skipped)
+            (filename is None or skipfiles.check(filename))
             and (
                 getattr(fn, "__name__", "") not in ["_call_impl", "_wrapped_call_impl"]
             )
@@ -527,7 +524,7 @@ def catch_errors_wrapper(callback, hooks: Hooks):
         if (
             # TODO: the first condition is not covered by any test
             frame.f_lasti >= first_real_inst_idx(frame.f_code)
-            or skipfiles.check_verbose(frame.f_code.co_filename).skipped
+            or skipfiles.check(frame.f_code.co_filename)
             or config.disable
         ):
             log.debug("skipping %s %s", frame.f_code.co_name, frame.f_code.co_filename)
@@ -1224,9 +1221,7 @@ def export(
         if (
             (shape_env := getattr(fake_mode, "shape_env", None)) is not None
             and (dim_constraints := shape_env.dim_constraints) is not None
-            and not skipfiles.check_verbose(
-                inspect.getsourcefile(call_to_inspect)
-            ).skipped
+            and not skipfiles.check(inspect.getsourcefile(call_to_inspect))
         ):
             dim_constraints.solve()
             dim_constraints.remove_redundant_dynamic_results()
