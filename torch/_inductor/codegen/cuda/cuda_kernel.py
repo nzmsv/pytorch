@@ -329,7 +329,7 @@ class CUDATemplateBuffer(TemplateBuffer):
         def render():
             return self.template.render(
                 kernel=kernel,
-                output_node=self,
+                template_node=self,
                 op=self.op,
                 epilogue_nodes=epilogue_nodes,
                 **self._render_kwargs,

@@ -83,7 +83,6 @@ class CUDATemplate(KernelTemplate):
             extra_args=extra_args,
             source_code=code,
         )
-
         cuda_template_buffer = CUDATemplateBuffer(
             template=self,
             op=op,

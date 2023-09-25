@@ -783,6 +783,7 @@ class FusedSchedulerNode(BaseSchedulerNode):
     def is_template(self):
         return any(x.is_template() for x in self.snodes)
 
+    @cache_on_self
     def get_template_node(self):
         for node in self.snodes:
             if node.is_template():

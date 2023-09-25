@@ -563,22 +563,24 @@ class CUTLASSGemmTemplate(CUTLASSTemplate):
         self,
         kernel: CUDATemplateKernel,
         op: "cutlass_gemm_op.GemmOperation",  # type: ignore[name-defined]
-        output_node: IRNode = None,
+        template_node: IRNode = None,
         epilogue_nodes: Optional[List[IRNode]] = None,
     ) -> str:
         if epilogue_nodes is not None and len(epilogue_nodes) > 0:
             assert (
-                output_node is not None
+                template_node is not None
             ), "Output node is required for epilogue fusion"
             assert isinstance(
-                output_node, Buffer
-            ), f"Output node has to be a Buffer, is type {type(output_node)}"
+                template_node, Buffer
+            ), f"Output node has to be a Buffer, is type {type(template_node)}"
             assert (
-                output_node.name is not None
+                template_node.name is not None
             ), "Output node has to be a Buffer with a name"
-            output_node_name = output_node.name
+            # This is the name of the output of the Matmul, before epilogues are applied.
+            # it is not necessarily materialized in global memory if we have an epilogue
+            template_output_node_name = template_node.name
         else:
-            output_node_name = None
+            template_output_node_name = None
         if epilogue_nodes is not None and len(epilogue_nodes) > 1:
             assert self.can_fuse_epilogue and CUTLASSGemmTemplate.supports_evt(
                 op
@@ -586,8 +588,10 @@ class CUTLASSGemmTemplate(CUTLASSTemplate):
         assert cutlass_utils.try_import_cutlass()
         import cutlass_library as cutlass_lib  # type: ignore[import]
 
-        if output_node is not None:
-            self.output_node = output_node
+        if template_node is not None:
+            self.output_node = template_node
+        if epilogue_nodes is not None and len(epilogue_nodes) > 0:
+            self.output_node = epilogue_nodes[-1]
 
         assert len(self.input_nodes) >= 2 and self.output_node is not None
         X, W = self.input_nodes[0], self.input_nodes[1]
@@ -608,7 +612,7 @@ class CUTLASSGemmTemplate(CUTLASSTemplate):
                 epilogue_template = GEMM_ARGS_CUTLASS_3X_EVT_EPILOGUE
                 evt_epilogue_args = (
                     CutlassEVTEpilogueArgumentFormatter.ir_to_evt_argument_string(
-                        output_node_name, epilogue_nodes
+                        template_output_node_name, epilogue_nodes
                     )
                 )
             else:
@@ -619,7 +623,7 @@ class CUTLASSGemmTemplate(CUTLASSTemplate):
             argument_template = GEMM_ARGS_CUTLASS_2X
 
         instance_definition, instance_type = self.define_gemm_instance(
-            op, output_node_name, epilogue_nodes
+            op, template_output_node_name, epilogue_nodes
         )
         options = dict(
             alpha=self.alpha,
