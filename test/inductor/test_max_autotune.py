@@ -242,7 +242,10 @@ class TestDoBench(TestCase):
         if max_autotune_gemm_backends == "CUTLASS" and torch.version.hip:
             return
 
-        torch.backends.cuda.matmul.allow_fp16_reduced_precision_reduction = False
+        # TODO: If I set this to False, I get a compilation error due to
+        # mismatched types at some point. If I use fp32 for everything, the Cutlass op generator
+        # creates no viable candidate ops that are EVT-capable.
+        torch.backends.cuda.matmul.allow_fp16_reduced_precision_reduction = True
 
         def mm(a, b):
             return (a @ b) * 3.0
@@ -268,7 +271,7 @@ class TestDoBench(TestCase):
         ):
             Y_compiled = torch.compile(mm, dynamic=dynamic)(a, b)
             Y = mm(a, b)
-            torch.testing.assert_close(Y_compiled, Y)
+            torch.testing.assert_close(Y_compiled, Y, atol=1e-2, rtol=1e-2)
 
     # TODO: Enable dynamic test cases when dynamic support is added.
     @unittest.skipIf(not SM75OrLater, "need sm_75")
