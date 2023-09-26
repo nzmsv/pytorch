@@ -55,15 +55,14 @@ _HERE = os.path.abspath(__file__)
 _TORCH_PATH = os.path.dirname(os.path.dirname(_HERE))
 
 if config.is_fbcode():
-    from triton.fb import build_paths
-    from triton.fb.build import _run_build_command
-
     from torch._inductor.fb.utils import (  # type: ignore[import]
         log_global_cache_errors,
         log_global_cache_stats,
         log_global_cache_vals,
         use_global_cache,
     )
+    from triton.fb import build_paths
+    from triton.fb.build import _run_build_command
 else:
 
     def log_global_cache_errors(*args, **kwargs):
@@ -726,7 +725,12 @@ def use_custom_generated_macros() -> str:
 def use_fb_internal_macros() -> str:
     if config.is_fbcode():
         openmp_lib = build_paths.openmp_lib()
-        return f"-Wp,-fopenmp {openmp_lib} -D C10_USE_GLOG -D C10_USE_MINIMAL_GLOG"
+        preprocessor_flags = " ".join((
+            "-D C10_USE_GLOG",
+            "-D C10_USE_MINIMAL_GLOG",
+            "-D C10_DISABLE_TENSORIMPL_EXTENSIBILITY",
+        ))
+        return f"-Wp,-fopenmp {openmp_lib} {preprocessor_flags}"
     else:
         return ""
 
