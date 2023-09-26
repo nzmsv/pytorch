@@ -269,7 +269,7 @@ class CUTLASSGemmTemplate(CUTLASSTemplate):
         }:
             return False
         if op.epilogue_schedule not in (
-            cutlass_lib.EpilogueScheduleType.ScheduleAuto,
+            # cutlass_lib.EpilogueScheduleType.ScheduleAuto,
             cutlass_lib.EpilogueScheduleType.TmaWarpSpecialized,
             cutlass_lib.EpilogueScheduleType.TmaWarpSpecializedCooperative,
         ):

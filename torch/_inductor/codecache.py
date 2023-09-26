@@ -1599,9 +1599,11 @@ class CUDACodeCache:
             with lock:
                 output_path = input_path[: -len(cls._SOURCE_CODE_SUFFIX)] + dst_file_ext
                 if not os.path.exists(output_path):
-                    cmd = cuda_compile_command(
+                    cmdstr = cuda_compile_command(
                         [input_path], output_path, dst_file_ext
-                    ).split(" ")
+                    )
+                    print(cmdstr)
+                    cmd = cmdstr.split(" ")
                     try:
                         subprocess.check_output(
                             cmd, stderr=subprocess.STDOUT, env=os.environ

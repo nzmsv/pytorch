@@ -31,6 +31,10 @@ class EmitGemmUniversal3xInstanceWithEVT:
     >
 """
         self.gemm_template = """
+using EpilogueScheduleType = ${epilogue_schedule};
+static_assert(cute::is_same_v<EpilogueScheduleType, cutlass::epilogue::TmaWarpSpecialized> ||
+         cute::is_same_v<EpilogueScheduleType, cutlass::epilogue::TmaWarpSpecializedCooperative>,
+        "Epilogue visitor trees are currently only supported by the TMA warp-specialized epilogue");
 static constexpr auto RoundStyle = cutlass::FloatRoundStyle::round_to_nearest;
 using ElementAcc = ${element_accumulator};
 ${epilogue_functor};
@@ -43,7 +47,7 @@ using ${operation_name}_epilogue =
     ${element_accumulator}, ${element_epilogue},
     ${element_c}, ${layout_c}, ${align_c},
     ${element_d}, ${layout_d}, ${align_d},
-    ${epilogue_schedule},
+    EpilogueScheduleType,
     ${operation_name}_epilogue_functor
   >::CollectiveOp;
 

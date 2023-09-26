@@ -541,7 +541,14 @@ class WrapperCodeGen(CodeGen):
         self.generate_end(result)
 
         self.add_benchmark_harness(result)
+        debug = True
+        if debug:
+            from pathlib import Path
 
+            p = Path(
+                "/home/klondenberg/github/pytorch/pytorch/tmp/wrapper_generated.py"
+            )
+            p.write_text(result.getvalue())
         return result.getvaluewithlinemap()
 
     def codegen_inputs(self, code: IndentedBuffer, graph_inputs: Dict[str, ir.Buffer]):
