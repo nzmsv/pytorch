@@ -1121,6 +1121,8 @@ class TestOperators(TestCase):
         xfail('as_strided_scatter', ''),
         xfail('masked.cumprod', ''),
         xfail("_upsample_bilinear2d_aa"),  # hit vmap fallback, which is disabled
+        xfail("nn.functional.interpolate", "bilinear"),  # hit _upsample_bilinear2d_aa vmap fallback, which is disabled (as added aa=true sample in OpInfo)
+        xfail("nn.functional.interpolate", "bicubic"),  # hit _upsample_bicubic2d_aa vmap fallback, which is disabled (as added aa=true sample in OpInfo)
         xfail("renorm"),  # hit vmap fallback, which is disabled
     }))
     @toleranceOverride({torch.float32: tol(atol=1e-04, rtol=1e-04)})
@@ -1226,6 +1228,8 @@ class TestOperators(TestCase):
         xfail("_native_batch_norm_legit"),
         xfail("native_dropout_backward"),
         xfail("_upsample_bilinear2d_aa"),  # hit vmap fallback, which is disabled
+        xfail("nn.functional.interpolate", "bilinear"),  # hit _upsample_bilinear2d_aa vmap fallback, which is disabled (as added aa=true sample in OpInfo)
+        xfail("nn.functional.interpolate", "bicubic"),  # hit _upsample_bicubic2d_aa vmap fallback, which is disabled (as added aa=true sample in OpInfo)
         xfail("index_fill"),  # aten::_unique hit the vmap fallback which is currently disabled
     }))
     def test_vmapvjp_has_batch_rule(self, device, dtype, op):

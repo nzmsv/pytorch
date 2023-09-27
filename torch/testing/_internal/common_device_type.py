@@ -839,6 +839,7 @@ class ops(_TestParametrizer):
         self.op_list = list(op_list)
         self.opinfo_dtypes = dtypes
         self.allowed_dtypes = set(allowed_dtypes) if allowed_dtypes is not None else None
+        print("op_list:", [op.name for op in op_list if "upsampl" in op.name])
 
     def _parametrize_test(self, test, generic_cls, device_cls):
         """ Parameterizes the given test function across each op and its associated dtypes. """
